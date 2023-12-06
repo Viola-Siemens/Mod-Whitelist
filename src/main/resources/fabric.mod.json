@@ -9,14 +9,14 @@
     "repo": "https://github.com/11241/ModWhitelist"
   },
   "license": "MIT",
-  "icon": "assets/mod_whitelist/icon.png",
+  "icon": "logo.png",
   "environment": "*",
   "entrypoints": {
     "client": [
       "com.hexagram2021.mod_whitelist.client.ModWhitelistClient"
     ],
     "main": [
-      "com.hexagram2021.mod_whitelist.ModWhitelist"
+	  "com.hexagram2021.mod_whitelist.server.ModWhitelistServer"
     ]
   },
   "mixins": [
