@@ -2,7 +2,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 
-package com.hexagram2021.mod_whitelist.common.config;
+package com.hexagram2021.mod_whitelist.common.network;
 
 import net.minecraft.FieldsAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;

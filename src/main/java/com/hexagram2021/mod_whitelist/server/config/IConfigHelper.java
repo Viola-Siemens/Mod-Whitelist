@@ -1,4 +1,4 @@
-package com.hexagram2021.mod_whitelist.common.config;
+package com.hexagram2021.mod_whitelist.server.config;
 
 import com.google.gson.*;
 

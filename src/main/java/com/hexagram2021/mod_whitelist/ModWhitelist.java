@@ -10,6 +10,6 @@ public class ModWhitelist implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
-	
+
 	}
 }

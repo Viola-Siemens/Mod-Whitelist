@@ -1,17 +1,23 @@
-package com.hexagram2021.mod_whitelist.common.config;
+package com.hexagram2021.mod_whitelist.server.config;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.hexagram2021.mod_whitelist.common.utils.MWLogger;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.hexagram2021.mod_whitelist.ModWhitelist.MODID;
 
-public class MWCommonConfig {
+public class MWServerConfig {
 	public interface IConfigValue<T extends Serializable> {
 		List<IConfigValue<?>> configValues = Lists.newArrayList();
 		
@@ -21,121 +27,142 @@ public class MWCommonConfig {
 		
 		void checkValueRange() throws ConfigValueException;
 	}
-	
-	public static class FloatConfigValue implements IConfigValue<Float> {
+
+	public static abstract class ListConfigValue<T extends Serializable> implements IConfigValue<ArrayList<T>> {
 		private final String name;
-		private float value;
-		private final float min;
-		private final float max;
-		
-		public FloatConfigValue(String name, float value, float min, float max) {
+		private final ArrayList<T> value;
+
+		@SafeVarargs
+		public ListConfigValue(String name, T... defaultValues) {
+			this(name, Arrays.stream(defaultValues).collect(Collectors.toCollection(Lists::newArrayList)));
+		}
+
+		public ListConfigValue(String name, ArrayList<T> value) {
 			this.name = name;
 			this.value = value;
-			this.min = min;
-			this.max = max;
-			
-			configValues.add(this);
 		}
-		
+
 		@Override
 		public void checkValueRange() throws ConfigValueException {
-			if(this.value > this.max || this.value < this.min) {
-				throw new ConfigValueException(this.name + " is not in range [%f, %f]! Please check your config file.".formatted(this.min, this.max));
-			}
+			this.value.forEach(v -> {
+				if(!this.isValid(v)) {
+					throw new ConfigValueException(this.createExceptionDescription(v));
+				}
+			});
 		}
-		
+
 		@Override
 		public void parseAsValue(JsonElement element) {
-			this.value = element.getAsFloat();
+			this.value.clear();
+			element.getAsJsonArray().asList().forEach(e -> this.value.add(this.parseAsElementValue(element)));
 		}
-		
+
 		@Override
 		public String name() {
 			return this.name;
 		}
-		
+
 		@Override
-		public Float value() {
+		public ArrayList<T> value() {
 			return this.value;
 		}
+
+		protected abstract boolean isValid(T element);
+		protected abstract String createExceptionDescription(T element);
+		protected abstract T parseAsElementValue(JsonElement element);
 	}
-	
-	public static class IntConfigValue implements IConfigValue<Integer> {
-		private final String name;
-		private int value;
-		private final int min;
-		private final int max;
-		
-		public IntConfigValue(String name, int value, int min, int max) {
-			this.name = name;
-			this.value = value;
-			this.min = min;
-			this.max = max;
-			
-			configValues.add(this);
+
+	public static class ModIdListConfigValue extends ListConfigValue<String> {
+
+		public ModIdListConfigValue(String name, String... defaultValues) {
+			super(name, defaultValues);
 		}
-		
-		@Override
-		public void checkValueRange() throws ConfigValueException {
-			if(this.value > this.max || this.value < this.min) {
-				throw new ConfigValueException(this.name + " is not in range [%d, %d]! Please check your config file.".formatted(this.min, this.max));
-			}
+
+		@SuppressWarnings("unused")
+		public ModIdListConfigValue(String name, ArrayList<String> value) {
+			super(name, value);
 		}
-		
+
 		@Override
-		public void parseAsValue(JsonElement element) {
-			this.value = element.getAsInt();
+		protected boolean isValid(String element) {
+			return Pattern.matches("[a-z\\d\\-._]+", element);
 		}
-		
+
 		@Override
-		public String name() {
-			return this.name;
+		protected String createExceptionDescription(String element) {
+			return "\"%s\" is not a valid modid!".formatted(element);
 		}
-		
+
 		@Override
-		public Integer value() {
-			return this.value;
+		protected String parseAsElementValue(JsonElement element) {
+			return element.getAsString();
 		}
 	}
-	
+
 	public static class BoolConfigValue implements IConfigValue<Boolean> {
 		private final String name;
 		private boolean value;
-		
+
 		public BoolConfigValue(String name, boolean value) {
 			this.name = name;
 			this.value = value;
-			
+
 			configValues.add(this);
 		}
-		
+
 		@Override
 		public void checkValueRange() throws ConfigValueException {
 		}
-		
+
 		@Override
 		public void parseAsValue(JsonElement element) {
 			this.value = element.getAsBoolean();
 		}
-		
+
 		@Override
 		public String name() {
 			return this.name;
 		}
-		
+
 		@Override
 		public Boolean value() {
 			return this.value;
 		}
 	}
-	
+
 	public static final File filePath = new File("./config/");
 	private static final File configFile = new File(filePath + "/" + MODID + "-config.json");
 	private static final File readmeFile = new File(filePath + "/" + MODID + "-config-readme.md");
 	
 	//WhiteLists
-	
-	
+	public static final BoolConfigValue USE_WHITELIST_ONLY = new BoolConfigValue("USE_WHITELIST_ONLY", false);
+	public static final ModIdListConfigValue CLIENT_MOD_NECESSARY = new ModIdListConfigValue("CLIENT_MOD_NECESSARY", MODID);
+	public static final ModIdListConfigValue CLIENT_MOD_WHITELIST = new ModIdListConfigValue("CLIENT_MOD_WHITELIST", MODID);
+	public static final ModIdListConfigValue CLIENT_MOD_BLACKLIST = new ModIdListConfigValue("CLIENT_MOD_BLACKLIST", "aristois", "bleachhack", "meteor-client", "wurst");
+
+	public static List<Pair<String, MismatchType>> test(List<String> mods) {
+		List<Pair<String, MismatchType>> ret = Lists.newArrayList();
+		for(String mod: CLIENT_MOD_NECESSARY.value()) {
+			if(!mods.contains(mod)) {
+				ret.add(Pair.of(mod, MismatchType.UNINSTALLED_BUT_SHOULD_INSTALL));
+			}
+		}
+		if(USE_WHITELIST_ONLY.value()) {
+			for(String mod: mods) {
+				if(!CLIENT_MOD_WHITELIST.value().contains(mod)) {
+					ret.add(Pair.of(mod, MismatchType.INSTALLED_BUT_SHOULD_NOT_INSTALL));
+				}
+			}
+		} else {
+			for(String mod: mods) {
+				if(CLIENT_MOD_BLACKLIST.value().contains(mod)) {
+					ret.add(Pair.of(mod, MismatchType.INSTALLED_BUT_SHOULD_NOT_INSTALL));
+				}
+			}
+		}
+		return ret;
+	}
+
 	static {
 		lazyInit();
 	}
@@ -201,12 +228,32 @@ public class MWCommonConfig {
 					configJson.addProperty(iConfigValue.name(), bool);
 				} else if(value instanceof String str) {
 					configJson.addProperty(iConfigValue.name(), str);
+				} else if(value instanceof List<?> list) {
+					configJson.add(iConfigValue.name(), buildList(list));
 				} else {
 					MWLogger.LOGGER.error("Unknown Config Value Type: " + value.getClass().getName());
 				}
 			});
 			IConfigHelper.writeJsonToFile(writer, null, configJson, 0);
 		}
+	}
+
+	private static JsonArray buildList(List<?> list) {
+		JsonArray ret = new JsonArray();
+		list.forEach(value -> {
+			if(value instanceof Number number) {
+				ret.add(number);
+			} else if(value instanceof Boolean bool) {
+				ret.add(bool);
+			} else if(value instanceof String str) {
+				ret.add(str);
+			} else if(value instanceof List<?> list1) {
+				ret.add(buildList(list1));
+			} else {
+				MWLogger.LOGGER.error("Unknown Element Type from List: " + value.getClass().getName());
+			}
+		});
+		return ret;
 	}
 	
 	public static void checkValues() {

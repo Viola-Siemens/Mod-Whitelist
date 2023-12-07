@@ -1,0 +1,10 @@
+{
+  "language": "English",
+  "language.code": "en_us",
+  "language.region": "United States",
+
+  "multiplayer.disconnect.mod_whitelist.modlist_mismatch": "Client modlist mismatch happens when connecting to this server.\nPlease follow the following steps, or contact with your server operators:\n",
+  "multiplayer.disconnect.mod_whitelist.misc.to_install": "\nInstall mod \"%s\".",
+  "multiplayer.disconnect.mod_whitelist.misc.to_uninstall": "\nUninstall mod \"%s\".",
+  "multiplayer.disconnect.mod_whitelist.packet_corruption": "The packet sent to the server is corrupted. Please uninstall your hacked mods."
+}
