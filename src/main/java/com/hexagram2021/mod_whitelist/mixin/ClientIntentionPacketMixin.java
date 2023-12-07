@@ -48,7 +48,7 @@ public class ClientIntentionPacketMixin implements IPacketWithModIds {
 			try {
 				this.modIds = friendlyByteBuf.readList(FriendlyByteBuf::readUtf);
 			} catch (DecoderException e) {
-				MWLogger.LOGGER.debug("Decoder exception occurs when parsing ClientIntentionPacket: ", e);
+				MWLogger.LOGGER.warn("Decoder exception occurs when parsing ClientIntentionPacket: ", e);
 			}
 		}
 	}
