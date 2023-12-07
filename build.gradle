@@ -9,6 +9,15 @@ group = project.maven_group
 loom {
     splitEnvironmentSourceSets()
 
+    runs {
+        server {
+            runDir "run/server"
+        }
+        client {
+            runDir "run/client"
+        }
+    }
+
     mods {
         modid {
             sourceSet sourceSets.main
