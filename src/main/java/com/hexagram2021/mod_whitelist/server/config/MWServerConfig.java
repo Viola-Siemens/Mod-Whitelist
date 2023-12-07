@@ -140,7 +140,7 @@ public class MWServerConfig {
 	//WhiteLists
 	public static final BoolConfigValue USE_WHITELIST_ONLY = new BoolConfigValue("USE_WHITELIST_ONLY", false);
 	public static final ModIdListConfigValue CLIENT_MOD_NECESSARY = new ModIdListConfigValue("CLIENT_MOD_NECESSARY", MODID);
-	public static final ModIdListConfigValue CLIENT_MOD_WHITELIST = new ModIdListConfigValue("CLIENT_MOD_WHITELIST", MODID);
+	public static final ModIdListConfigValue CLIENT_MOD_WHITELIST = new ModIdListConfigValue("CLIENT_MOD_WHITELIST", "java", MODID, "fabricloader");
 	public static final ModIdListConfigValue CLIENT_MOD_BLACKLIST = new ModIdListConfigValue("CLIENT_MOD_BLACKLIST", "aristois", "bleachhack", "meteor-client", "wurst");
 
 	public static List<Pair<String, MismatchType>> test(List<String> mods) {
@@ -217,6 +217,8 @@ public class MWServerConfig {
 			writer.write("First, you should find the identifier of the mod (modid), a simple way is open the jar file with an archiver software (eg. WinZip, HaoZip, 7-Zip), open \"fabric.mod.json\" and see what the value of key \"id\" is. For example, the modid of Mod Whitelist mod is \"mod_whitelist\".\n\n");
 			writer.write("Then, add it to `CLIENT_MOD_NECESSARY` field if you want client players install it. By default, it is blacklist mode, so you can add it to `CLIENT_MOD_BLACKLIST` field if you do not want client players install it. If you want to use whitelist mode instead, set `USE_WHITELIST_ONLY` to true and add all whitelist modids to `CLIENT_MOD_WHITELIST` field.\n\n");
 			writer.write("In addition, if `USE_WHITELIST_ONLY` is true, `CLIENT_MOD_BLACKLIST` field is just ignored while running the server. And if `USE_WHITELIST_ONLY` is true, `CLIENT_MOD_WHITELIST` field is ignored instead.\n\n");
+			writer.write("As you might see, if fabric-api is installed, the modlist will contains quite a lot of modids. You can run a client with this mod installed, and open \".minecraft/logs/latest.log\", and you will see the following format line to simplify gathering the modlist manually:\n\n");
+			writer.write("```\n\nMod Whitelist vx.x.x from the client! Modlist: [fabric-api, ...]\n\n```\n\n");
 
 			writer.write("# Issue tracker\n\n");
 			writer.write("Visit https://github.com/Viola-Siemens/Mod-Whitelist/issues and post your issue and logs if you find any problems with this mod.\n");
