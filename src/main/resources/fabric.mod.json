@@ -16,7 +16,10 @@
       "com.hexagram2021.mod_whitelist.client.ModWhitelistClient"
     ],
     "main": [
-	  "com.hexagram2021.mod_whitelist.server.ModWhitelistServer"
+	  "com.hexagram2021.mod_whitelist.ModWhitelist"
+    ],
+    "server": [
+      "com.hexagram2021.mod_whitelist.server.ModWhitelistServer"
     ]
   },
   "mixins": [
@@ -24,6 +27,6 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.0",
-    "minecraft": "1.20.2"
+    "minecraft": ">=1.20 <1.21"
   }
 }

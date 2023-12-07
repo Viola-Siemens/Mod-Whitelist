@@ -6,6 +6,17 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        modid {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
 repositories {
 }
 

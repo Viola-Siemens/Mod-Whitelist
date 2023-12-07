@@ -8,6 +8,7 @@ import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,8 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(ClientIntentionPacket.class)
-public abstract class ClientIntentionPacketMixin implements IPacketWithModIds {
-	@Shadow public abstract ConnectionProtocol getIntention();
+public class ClientIntentionPacketMixin implements IPacketWithModIds {
+	@Shadow @Final
+	private ConnectionProtocol intention;
 
 	@Nullable
 	private List<String> modIds = null;
@@ -42,7 +44,7 @@ public abstract class ClientIntentionPacketMixin implements IPacketWithModIds {
 
 	@Inject(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V", at = @At(value = "TAIL"))
 	private void getModIdsFromNetwork(FriendlyByteBuf friendlyByteBuf, CallbackInfo ci) {
-		if(this.getIntention().equals(ConnectionProtocol.LOGIN)) {
+		if(this.intention.equals(ConnectionProtocol.LOGIN)) {
 			try {
 				this.modIds = friendlyByteBuf.readList(FriendlyByteBuf::readUtf);
 			} catch (DecoderException e) {

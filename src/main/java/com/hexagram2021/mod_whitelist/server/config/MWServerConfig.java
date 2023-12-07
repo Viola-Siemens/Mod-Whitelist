@@ -265,4 +265,8 @@ public class MWServerConfig {
 			super(message);
 		}
 	}
+
+	public static void hello() {
+		MWLogger.LOGGER.debug("Mod Whitelist mod is protecting your server!");
+	}
 }
