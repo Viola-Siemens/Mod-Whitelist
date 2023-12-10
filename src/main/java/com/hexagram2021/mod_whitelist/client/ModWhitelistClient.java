@@ -15,6 +15,7 @@ public class ModWhitelistClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		mods.clear();
 		FabricLoader.getInstance().getAllMods().forEach(mod -> mods.add(mod.getMetadata().getId()));
+		mods.sort(String::compareTo);
 
 		hello();
 	}
