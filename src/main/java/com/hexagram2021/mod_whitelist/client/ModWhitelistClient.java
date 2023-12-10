@@ -21,7 +21,7 @@ public class ModWhitelistClient implements ClientModInitializer {
 
 	public static void hello() {
 		StringBuilder modlist = new StringBuilder();
-		mods.forEach(mod -> modlist.append(mod).append(", "));
+		mods.forEach(mod -> modlist.append('"').append(mod).append("\", "));
 		MWLogger.LOGGER.info("%s v%s from the client! Modlist: [%s]".formatted(ModWhitelist.MOD_NAME, ModWhitelist.MOD_VERSION, modlist.toString()));
 	}
 }
