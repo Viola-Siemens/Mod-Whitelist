@@ -4,9 +4,12 @@
   "version": "${version}",
   "name": "Mod Whitelist",
   "description": "",
-  "authors": [],
+  "authors": [
+    "Liu Dongyu",
+    "MangoMAOU"
+  ],
   "contact": {
-    "repo": "https://github.com/11241/ModWhitelist"
+    "repo": "https://github.com/Viola-Siemens/Mod-Whitelist/issues"
   },
   "license": "MIT",
   "icon": "logo.png",

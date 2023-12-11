@@ -7,5 +7,6 @@ public interface IPacketWithModIds {
 	@Nullable
 	List<String> getModIds();
 
+	@SuppressWarnings("unused")
 	void setModIds(@Nullable List<String> modIds);
 }
