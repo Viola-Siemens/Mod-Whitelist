@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[46,)"
+license="MIT"
+issueTrackerURL="https://github.com/Viola-Siemens/Mod-Whitelist/issues"
+
+[[mods]]
+modId="mod_whitelist"
+version="${file.jarVersion}"
+displayName="Mod Whitelist"
+logoFile="logo.png"
+credits="Liu Dongyu, MangoMAOU"
+authors="Liu Dongyu, MangoMAOU"
+description='''
+A security mod that prevents players entering the server if modlist not matches
+'''
+
+[[dependencies.mod_whitelist]]
+    modId="forge"
+    mandatory=true
+    versionRange="[46,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mod_whitelist]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20,1.21)"
+    ordering="NONE"
+    side="BOTH"

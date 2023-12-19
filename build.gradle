@@ -1,83 +1,196 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        jcenter()
+        mavenCentral()
+        maven { name="sponge"; url 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0,6.2)', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'eclipse'
+    id 'idea'
     id 'maven-publish'
 }
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
 
-version = project.mod_version
-group = project.maven_group
+version = '1.1.0'
+group = 'com.hexagram2021.mod_whitelist'
 
-loom {
-    splitEnvironmentSourceSets()
+base {
+    archivesName = 'mod_whitelist'
+}
+archivesBaseName = 'mod_whitelist'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    enableIdeaPrepareRuns = true
+    copyIdeResources = true
+    generateRunFolders = true
 
     runs {
-        server {
-            runDir "run/server"
-        }
         client {
-            runDir "run/client"
-        }
-    }
+            workingDirectory project.file('run/client')
 
-    mods {
-        modid {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            property 'forge.logging.console.level', 'debug'
+
+            property 'forge.enabledGameTestNamespaces', 'mod_whitelist'
+            arg "-mixin.config=mod_whitelist.mixins.json"
+
+            mods {
+                mod_whitelist {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run/server')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            property 'forge.logging.console.level', 'debug'
+
+            property 'forge.enabledGameTestNamespaces', 'mod_whitelist'
+            arg "-mixin.config=mod_whitelist.mixins.json"
+
+            mods {
+                mod_whitelist {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        gameTestServer {
+            workingDirectory project.file('run/testServer')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            property 'forge.logging.console.level', 'debug'
+
+            property 'forge.enabledGameTestNamespaces', 'mod_whitelist'
+            arg "-mixin.config=mod_whitelist.mixins.json"
+
+            mods {
+                mod_whitelist {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run/data')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'mod_whitelist', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            arg "-mixin.config=mod_whitelist.mixins.json"
+
+            mods {
+                mod_whitelist {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
 repositories {
+    maven { // TOP
+        url "https://cursemaven.com"
+    }
+    maven { // JEI
+        name 'DVS1 Maven FS'
+        url 'https://dvs1.progwml6.com/files/maven'
+    }
+    maven { //mirror
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    minecraft 'net.minecraftforge:forge:1.20.1-47.2.0'
 
-    // modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
-}
-
-processResources {
-    inputs.property "version", project.version
-    filteringCharset "UTF-8"
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-}
-
-def targetJavaVersion = 17
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release = targetJavaVersion
-    }
-}
-
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    archivesBaseName = project.archives_base_name
-    withSourcesJar()
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "Mod Whitelist",
+                "Specification-Vendor"    : "Liu Dongyu, MangoMAOU",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : "Liu Dongyu, MangoMAOU",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'FMLCorePluginContainsFMLMod': 'true'
+        ])
+    }
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}"}
     }
 }
 
+jar.finalizedBy('reobfJar')
+
+task sourceJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives sourceJar
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+            artifact jar
+            artifact sourceJar
         }
     }
-
     repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
     }
+}
+
+mixin {
+    add sourceSets.main, 'mod_whitelist.refmap.json'
+    config 'mod_whitelist.mixins.json'
+
+    debug.verbose = true
+    debug.export = true
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
