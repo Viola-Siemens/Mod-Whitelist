@@ -18,7 +18,7 @@ public class ModWhitelistClient {
 	public static final List<String> mods = Lists.newArrayList();
 
 	@SubscribeEvent
-	public void onInitializeClient(FMLClientSetupEvent event) {
+	public static void onInitializeClient(FMLClientSetupEvent event) {
 		mods.clear();
 		ModList.get().getMods().forEach(mod -> mods.add(mod.getModId()));
 		mods.sort(String::compareTo);

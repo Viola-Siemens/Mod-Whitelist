@@ -153,9 +153,7 @@ jar {
                 'FMLCorePluginContainsFMLMod': 'true'
         ])
     }
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
-    }
+    from "LICENSE"
 }
 
 jar.finalizedBy('reobfJar')
