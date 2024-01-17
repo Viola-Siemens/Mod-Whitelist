@@ -195,7 +195,7 @@ public class MWServerConfig {
 			"fabric-transitive-access-wideners-v1",
 			"fabricloader",
 			"java", MODID);
-	public static final ModIdListConfigValue CLIENT_MOD_BLACKLIST = new ModIdListConfigValue("CLIENT_MOD_BLACKLIST", "aristois", "bleachhack", "meteor-client", "wurst");
+	public static final ModIdListConfigValue CLIENT_MOD_BLACKLIST = new ModIdListConfigValue("CLIENT_MOD_BLACKLIST", "aristois", "bleachhack", "meteor-client", "wurst", "advanced-xray-fabric", "xray");
 
 	public static List<Pair<String, MismatchType>> test(List<String> mods) {
 		List<Pair<String, MismatchType>> ret = Lists.newArrayList();
