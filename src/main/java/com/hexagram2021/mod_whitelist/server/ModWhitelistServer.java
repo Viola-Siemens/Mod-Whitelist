@@ -11,7 +11,7 @@ import static com.hexagram2021.mod_whitelist.ModWhitelist.MODID;
 @Mod.EventBusSubscriber(value = Dist.DEDICATED_SERVER, modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModWhitelistServer {
 	@SubscribeEvent
-	public void onInitializeServer(FMLDedicatedServerSetupEvent event) {
+	public static void onInitializeServer(FMLDedicatedServerSetupEvent event) {
 		MWServerConfig.hello();
 	}
 }
