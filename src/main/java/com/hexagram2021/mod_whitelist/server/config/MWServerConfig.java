@@ -140,7 +140,7 @@ public class MWServerConfig {
 	//WhiteLists
 	public static final BoolConfigValue USE_WHITELIST_ONLY = new BoolConfigValue("USE_WHITELIST_ONLY", false);
 	public static final ModIdListConfigValue CLIENT_MOD_NECESSARY = new ModIdListConfigValue("CLIENT_MOD_NECESSARY", MODID);
-	public static final ModIdListConfigValue CLIENT_MOD_WHITELIST = new ModIdListConfigValue("CLIENT_MOD_WHITELIST", "forge", MODID);
+	public static final ModIdListConfigValue CLIENT_MOD_WHITELIST = new ModIdListConfigValue("CLIENT_MOD_WHITELIST", "forge", "minecraft", MODID);
 	public static final ModIdListConfigValue CLIENT_MOD_BLACKLIST = new ModIdListConfigValue("CLIENT_MOD_BLACKLIST", "aristois", "bleachhack", "meteor-client", "wurst");
 
 	public static List<Pair<String, MismatchType>> test(List<String> mods) {
