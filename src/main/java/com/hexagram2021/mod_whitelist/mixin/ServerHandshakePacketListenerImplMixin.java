@@ -24,10 +24,11 @@ public class ServerHandshakePacketListenerImplMixin {
 	@Shadow @Final
 	private Connection connection;
 
-	@Inject(method = "handleIntention", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;setProtocol(Lnet/minecraft/network/ConnectionProtocol;)V", shift = At.Shift.AFTER, ordinal = 0), cancellable = true)
+	@Inject(method = "handleIntention", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;setClientboundProtocolAfterHandshake(Lnet/minecraft/network/protocol/handshake/ClientIntent;)V", shift = At.Shift.AFTER, ordinal = 0), cancellable = true)
 	private void tryDisconnectPlayersIfModlistNotMatches(ClientIntentionPacket clientIntentionPacket, CallbackInfo ci) {
 		MutableComponent reason = null;
-		if(clientIntentionPacket instanceof IPacketWithModIds packetWithModIds && packetWithModIds.getModIds() != null) {
+		IPacketWithModIds packetWithModIds = (IPacketWithModIds)(Object)clientIntentionPacket;
+		if(packetWithModIds.getModIds() != null) {
 			List<Pair<String, MismatchType>> mismatches = MWServerConfig.test(packetWithModIds.getModIds());
 			if(!mismatches.isEmpty()) {
 				reason = Component.translatable("multiplayer.disconnect.mod_whitelist.modlist_mismatch");
